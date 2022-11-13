@@ -15,3 +15,33 @@ function fetchMeetupById(meetupId) {
 }
 
 // Требуется создать Vue приложение
+createApp({
+  data() {
+    return {
+      meetups: {},
+      meetupId: 0,
+    };
+  },
+  computed: {
+    meetupTitle() {
+      if (!this.meetups[this.meetupId]) {
+        return '';
+      }
+
+      return this.meetups[this.meetupId].title;
+    },
+  },
+  watch: {
+    meetupId: {
+      handler(meetupId) {
+        if (this.meetups[meetupId]) {
+          return;
+        }
+
+        fetchMeetupById(meetupId).then((result) => {
+          this.meetups[meetupId] = result;
+        });
+      },
+    },
+  },
+}).mount('#app');

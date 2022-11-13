@@ -7,15 +7,13 @@
   <body>
     <div id="app">
       <div>
-        <label v-for=""><input type="radio" name="meetupId" value="1" /> 1</label>
-        <label><input type="radio" name="meetupId" value="2" /> 2</label>
-        <label><input type="radio" name="meetupId" value="3" /> 3</label>
-        <label><input type="radio" name="meetupId" value="4" /> 4</label>
-        <label><input type="radio" name="meetupId" value="5" /> 5</label>
+        <label v-for="key in 5" :key="key">
+          <input type="radio" name="meetupId" :value="key" v-model="meetupId" /> {{key}}
+        </label>
 
         <hr />
 
-        <h3>MEETUP_TITLE</h3>
+        <h3 v-if="meetupTitle">{{meetupTitle}}</h3>
       </div>
     </div>
 
