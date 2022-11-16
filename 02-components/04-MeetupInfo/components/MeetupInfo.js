@@ -20,11 +20,11 @@ export default defineComponent({
 
   computed: {
     formatDate() {
-      return new Date(this.date).toLocaleDateString(navigator.language, {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      });
+      const currentDate = new Date(this.date);
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const date = String(currentDate.getDate()).padStart(2, '0');
+
+      return `${currentDate.getFullYear()}-${month}-${date}`;
     },
     localDate() {
       return new Date(this.date).toLocaleDateString(navigator.language, {
