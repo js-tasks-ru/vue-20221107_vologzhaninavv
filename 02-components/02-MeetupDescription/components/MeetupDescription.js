@@ -8,7 +8,7 @@ export default defineComponent({
       type: String,
       required: false,
       default: () => '',
-    }
+    },
   },
 
   template: `<p class="meetup-description">{{ description }}</p>`,

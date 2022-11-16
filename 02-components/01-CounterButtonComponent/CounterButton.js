@@ -8,7 +8,7 @@ export default defineComponent({
       type: Number,
       required: false,
       default: () => 0,
-    }
+    },
   },
 
   emits: ['update:count'],
