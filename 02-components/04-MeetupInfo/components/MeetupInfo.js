@@ -3,19 +3,51 @@ import { defineComponent } from '../vendor/vue.esm-browser.js';
 export default defineComponent({
   name: 'MeetupInfo',
 
+  props: {
+    organizer: {
+      type: String,
+      required: true,
+    },
+    place: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Number,
+      required: true,
+    },
+  },
+
+  computed: {
+    formatDate() {
+      const currentDate = new Date(this.date);
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const date = String(currentDate.getDate()).padStart(2, '0');
+
+      return `${currentDate.getFullYear()}-${month}-${date}`;
+    },
+    localDate() {
+      return new Date(this.date).toLocaleDateString(navigator.language, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
+  },
+
   template: `
     <ul class="meetup-info">
       <li>
         <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-user.svg" />
-        Организатор
+        {{ organizer }}
       </li>
       <li>
         <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-map.svg" />
-        Место
+        {{ place }}
       </li>
       <li>
         <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-        <time datetime="2020-01-01">1 янв. 2020</time>
+        <time :datetime="formatDate">{{ localDate }}</time>
       </li>
     </ul>`,
 });
