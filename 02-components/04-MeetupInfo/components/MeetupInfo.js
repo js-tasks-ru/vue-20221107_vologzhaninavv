@@ -20,11 +20,7 @@ export default defineComponent({
 
   computed: {
     formatDate() {
-      const currentDate = new Date(this.date);
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      const date = String(currentDate.getDate()).padStart(2, '0');
-
-      return `${currentDate.getFullYear()}-${month}-${date}`;
+      return new Date(this.date).toISOString().substring(0, 10);
     },
     localDate() {
       return new Date(this.date).toLocaleDateString(navigator.language, {
