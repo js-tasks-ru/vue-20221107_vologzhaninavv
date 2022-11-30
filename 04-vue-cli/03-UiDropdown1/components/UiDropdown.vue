@@ -1,20 +1,37 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <ui-icon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="{ dropdown_opened: isOpen }">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="{ dropdown__toggle_icon: withIcons }"
+      @click="toggleDropdown"
+    >
+      <template v-if="selectedOption">
+        <ui-icon v-if="selectedOption.icon" :icon="selectedOption.icon" class="dropdown__icon" />
+        <span>{{ selectedOption.text }}</span>
+      </template>
+      <span v-else>{{ title }}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <ui-icon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <ui-icon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div v-show="isOpen" class="dropdown__menu" role="listbox">
+      <button
+        v-for="option in options"
+        :key="option.value"
+        :value="option.value"
+        class="dropdown__item"
+        :class="{ dropdown__item_icon: withIcons }"
+        role="option"
+        type="button"
+        @click="changeValue(option.value)"
+      >
+        <ui-icon v-if="option.icon" :icon="option.icon" class="dropdown__icon" />
+        {{ option.text }}
       </button>
     </div>
+
+    <select :value="modelValue" @change="changeValue($event.target.value)">
+      <option v-for="option in options" :key="option.value" :value="option.value">{{ option.text }}</option>
+    </select>
   </div>
 </template>
 
@@ -25,6 +42,48 @@ export default {
   name: 'UiDropdown',
 
   components: { UiIcon },
+
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    modelValue: {
+      type: String,
+      required: false,
+    },
+  },
+
+  emits: ['update:modelValue'],
+
+  data() {
+    return {
+      isOpen: false,
+    };
+  },
+
+  computed: {
+    selectedOption() {
+      return this.options.find((option) => option.value === this.modelValue);
+    },
+    withIcons() {
+      return Boolean(this.options.find((option) => option.icon));
+    },
+  },
+
+  methods: {
+    toggleDropdown() {
+      this.isOpen = !this.isOpen;
+    },
+    changeValue(value) {
+      this.$emit('update:modelValue', value);
+      this.toggleDropdown();
+    },
+  },
 };
 </script>
 
@@ -32,6 +91,10 @@ export default {
 .dropdown {
   position: relative;
   display: inline-block;
+}
+
+.dropdown select {
+  display: none;
 }
 
 .dropdown__toggle {
