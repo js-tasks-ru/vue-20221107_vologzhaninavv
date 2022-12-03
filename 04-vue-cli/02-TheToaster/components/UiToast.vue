@@ -1,5 +1,5 @@
 <template>
-  <div class="toast" :class="[`toast_${type}`]">
+  <div class="toast" :class="`toast_${type}`">
     <ui-icon v-if="$options.icons[type]" class="toast__icon" :icon="$options.icons[type]" />
     <span>
       <slot>{{ message }}</slot>
@@ -18,10 +18,6 @@ export default {
   },
 
   props: {
-    id: {
-      type: Number,
-      required: true,
-    },
     duration: {
       type: Number,
       required: false,
@@ -62,7 +58,7 @@ export default {
 
   methods: {
     closeMessage() {
-      this.$emit('close', this.id);
+      this.$emit('close');
     },
   },
 
