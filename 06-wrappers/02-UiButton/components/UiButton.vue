@@ -1,10 +1,53 @@
 <template>
-  <button class="button button_secondary button_block">BUTTON</button>
+  <component :is="tag" v-bind="attrs" class="button" :class="className">
+    <slot />
+  </component>
 </template>
 
 <script>
 export default {
   name: 'UiButton',
+
+  inheritAttrs: false,
+
+  props: {
+    tag: {
+      required: false,
+      default: 'button',
+    },
+    variant: {
+      type: String,
+      required: false,
+      default: 'secondary',
+      validator: (variant) => ['primary', 'secondary', 'danger'].includes(variant),
+    },
+    block: {
+      type: Boolean,
+    },
+  },
+
+  computed: {
+    attrs() {
+      const attrs = {
+        ...this.$attrs,
+      };
+
+      if (this.tag === 'button' && !attrs.type) {
+        attrs.type = 'button';
+      }
+
+      return attrs;
+    },
+    className() {
+      const className = [`button_${this.variant}`];
+
+      if (this.block) {
+        className.push('button_block');
+      }
+
+      return className;
+    },
+  },
 };
 </script>
 
