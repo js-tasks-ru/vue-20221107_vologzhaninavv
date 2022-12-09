@@ -1,13 +1,28 @@
 <template>
-  <div class="input-group input-group_icon input-group_icon-left input-group_icon-right">
-    <div class="input-group__icon">
-      <img class="icon" alt="icon" />
+  <div
+    class="input-group"
+    :class="{
+      'input-group_icon': Boolean($slots['left-icon']) || Boolean($slots['right-icon']),
+      'input-group_icon-left': Boolean($slots['left-icon']),
+      'input-group_icon-right': Boolean($slots['right-icon']),
+    }"
+  >
+    <div v-if="Boolean($slots['left-icon'])" class="input-group__icon">
+      <slot name="left-icon" />
     </div>
 
-    <input ref="input" class="form-control form-control_rounded form-control_sm" />
+    <component
+      :is="tag"
+      ref="input"
+      :value="value"
+      v-bind="$attrs"
+      class="form-control"
+      :class="{ 'form-control_rounded': rounded, 'form-control_sm': small }"
+      @[eventChangeName]="value = $event.target.value"
+    />
 
-    <div class="input-group__icon">
-      <img class="icon" alt="icon" />
+    <div v-if="Boolean($slots['right-icon'])" class="input-group__icon">
+      <slot name="right-icon" />
     </div>
   </div>
 </template>
@@ -15,6 +30,56 @@
 <script>
 export default {
   name: 'UiInput',
+
+  inheritAttrs: false,
+
+  props: {
+    small: {
+      type: Boolean,
+    },
+    rounded: {
+      type: Boolean,
+    },
+    multiline: {
+      type: Boolean,
+    },
+    modelValue: {
+      type: String,
+      required: true,
+    },
+    modelModifiers: {
+      default: () => ({}),
+    },
+  },
+
+  emits: ['update:modelValue'],
+
+  computed: {
+    tag() {
+      return this.multiline ? 'textarea' : 'input';
+    },
+    eventChangeName() {
+      if (this.modelModifiers.lazy) {
+        return 'change';
+      }
+
+      return 'input';
+    },
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit('update:modelValue', value);
+      },
+    },
+  },
+
+  methods: {
+    focus() {
+      this.$refs.input.focus();
+    },
+  },
 };
 </script>
 
