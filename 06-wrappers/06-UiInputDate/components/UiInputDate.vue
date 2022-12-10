@@ -1,5 +1,5 @@
 <template>
-  <ui-input v-bind="$attrs" v-model="value" :type="type" :valueAsNumber="valueAsNumber" @input="inputDate">
+  <ui-input v-model="value" :type="type" :valueAsNumber="valueAsNumber" @input="inputDate">
     <template v-for="slotName in Object.keys($slots)" #[slotName]>
       <slot :name="slotName" />
     </template>
@@ -13,8 +13,6 @@ export default {
   name: 'UiInputDate',
 
   components: { UiInput },
-
-  inheritAttrs: false,
 
   props: {
     type: {
