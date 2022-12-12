@@ -1,38 +1,58 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="removeAgendaItem">
       <ui-icon icon="trash" />
     </button>
 
     <ui-form-group>
-      <ui-dropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <ui-dropdown v-model="localAgendaItem.type" title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
     </ui-form-group>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <ui-form-group label="Начало">
-          <ui-input type="time" placeholder="00:00" name="startsAt" />
+          <ui-input v-model="localAgendaItem.startsAt" type="time" placeholder="00:00" name="startsAt" />
         </ui-form-group>
       </div>
       <div class="agenda-item-form__col">
         <ui-form-group label="Окончание">
-          <ui-input type="time" placeholder="00:00" name="endsAt" />
+          <ui-input v-model="localAgendaItem.endsAt" type="time" placeholder="00:00" name="endsAt" />
         </ui-form-group>
       </div>
     </div>
 
-    <ui-form-group label="Тема">
-      <ui-input name="title" />
-    </ui-form-group>
-    <ui-form-group label="Докладчик">
-      <ui-input name="speaker" />
-    </ui-form-group>
-    <ui-form-group label="Описание">
-      <ui-input multiline name="description" />
-    </ui-form-group>
-    <ui-form-group label="Язык">
-      <ui-dropdown title="Язык" :options="$options.talkLanguageOptions" name="language" />
-    </ui-form-group>
+    <template v-if="localAgendaItem.type === 'talk'">
+      <ui-form-group label="Тема">
+        <ui-input v-model="localAgendaItem.title" name="title" />
+      </ui-form-group>
+      <ui-form-group label="Докладчик">
+        <ui-input v-model="localAgendaItem.speaker" name="speaker" />
+      </ui-form-group>
+      <ui-form-group label="Описание">
+        <ui-input v-model="localAgendaItem.description" multiline name="description" />
+      </ui-form-group>
+      <ui-form-group label="Язык">
+        <ui-dropdown
+          v-model="localAgendaItem.language"
+          title="Язык"
+          :options="$options.talkLanguageOptions"
+          name="language"
+        />
+      </ui-form-group>
+    </template>
+    <template v-else-if="localAgendaItem.type === 'other'">
+      <ui-form-group label="Заголовок">
+        <ui-input v-model="localAgendaItem.title" name="title" />
+      </ui-form-group>
+      <ui-form-group label="Описание">
+        <ui-input v-model="localAgendaItem.description" multiline name="description" />
+      </ui-form-group>
+    </template>
+    <template v-else>
+      <ui-form-group label="Нестандартный текст (необязательно)">
+        <ui-input v-model="localAgendaItem.title" name="title" />
+      </ui-form-group>
+    </template>
   </fieldset>
 </template>
 
@@ -88,6 +108,38 @@ export default {
     agendaItem: {
       type: Object,
       required: true,
+    },
+  },
+
+  emits: ['update:agendaItem', 'remove'],
+
+  data() {
+    return {
+      localAgendaItem: { ...this.agendaItem },
+    };
+  },
+
+  watch: {
+    localAgendaItem: {
+      deep: true,
+      handler() {
+        this.$emit('update:agendaItem', { ...this.localAgendaItem });
+      },
+    },
+    'localAgendaItem.startsAt'(newVal, oldVal) {
+      const diff = this.getTimeInMs(this.localAgendaItem.endsAt) - this.getTimeInMs(oldVal);
+      const newEndsAtTime = this.getTimeInMs(newVal) + diff;
+      this.localAgendaItem.endsAt = new Date(newEndsAtTime).toISOString().substring(11, 16);
+    },
+  },
+
+  methods: {
+    removeAgendaItem() {
+      this.$emit('remove');
+    },
+    getTimeInMs(time) {
+      const [hours, minutes] = time.split(':');
+      return (parseInt(hours, 10) * 60 + parseInt(minutes, 10)) * 60 * 1000;
     },
   },
 };
