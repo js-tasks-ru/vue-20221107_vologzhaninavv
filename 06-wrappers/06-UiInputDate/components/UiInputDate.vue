@@ -1,5 +1,5 @@
 <template>
-  <ui-input v-model="value" :type="type" :valueAsNumber="valueAsNumber" @input="inputDate">
+  <ui-input :modelValue="value" :type="type" :valueAsNumber="valueAsNumber" @input="inputDate">
     <template v-for="slotName in Object.keys($slots)" #[slotName]>
       <slot :name="slotName" />
     </template>
