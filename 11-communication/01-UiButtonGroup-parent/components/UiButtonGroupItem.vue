@@ -1,5 +1,15 @@
 <template>
-  <button class="button-group__button button-group__button_active" type="button" aria-selected="false">Button</button>
+  <button
+    class="button-group__button"
+    :class="{ 'button-group__button_active': value === valueGroup }"
+    type="button"
+    aria-selected="false"
+    @click="click"
+  >
+    <slot>
+      {{ value }}
+    </slot>
+  </button>
 </template>
 
 <script>
@@ -9,6 +19,24 @@ export default {
   props: {
     value: {
       required: true,
+    },
+  },
+
+  computed: {
+    valueGroup() {
+      return this.$parent.modelValue;
+    },
+  },
+
+  created() {
+    if (this.$parent.$options.name !== 'UiButtonGroup') {
+      console.warn('Компонент UiButtonGroupItem можно использовать только внутри UiButtonGroup');
+    }
+  },
+
+  methods: {
+    click() {
+      this.$parent.setValue(this.value);
     },
   },
 };
